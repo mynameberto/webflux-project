@@ -1,5 +1,7 @@
 package br.com.bertasso.webfluxcourse.controller;
 
+import br.com.bertasso.webfluxcourse.model.request.UserRequest;
+import br.com.bertasso.webfluxcourse.model.response.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
