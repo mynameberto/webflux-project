@@ -6,4 +6,5 @@ public record UserResponse(
         String email,
         String password
 ) {
+
 }
