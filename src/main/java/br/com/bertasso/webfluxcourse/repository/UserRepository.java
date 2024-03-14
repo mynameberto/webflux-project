@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserRepository {
 
-    private final ReactiveMongoTemplate mongoTemplate;
+    private ReactiveMongoTemplate mongoTemplate;
 
     public Mono<User> save(final User user){
         return mongoTemplate.save(user);

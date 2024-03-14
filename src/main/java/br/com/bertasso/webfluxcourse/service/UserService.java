@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository repository;
-    private final UserMapper mapper;
+    private UserRepository repository;
+    private UserMapper mapper;
 
     public Mono<User> save(final UserRequest request) {
         return repository.save(mapper.toEntity(request));
