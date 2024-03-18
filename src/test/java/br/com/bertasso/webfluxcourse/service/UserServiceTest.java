@@ -4,6 +4,7 @@ import br.com.bertasso.webfluxcourse.entity.User;
 import br.com.bertasso.webfluxcourse.mapper.UserMapper;
 import br.com.bertasso.webfluxcourse.model.request.UserRequest;
 import br.com.bertasso.webfluxcourse.repository.UserRepository;
+import br.com.bertasso.webfluxcourse.service.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,8 @@ import reactor.test.StepVerifier;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -93,6 +96,35 @@ class UserServiceTest {
                 .verify();
 
         Mockito.verify(repository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void testDelete() {
+        User entity = User.builder().build();
+        when(repository.findAndRemove(anyString())).thenReturn(Mono.just(entity));
+
+        Mono<User> result = service.delete("123");
+
+        StepVerifier.create(result)
+                .expectNextMatches(Objects::nonNull)
+                .expectComplete()
+                .verify();
+
+        Mockito.verify(repository, times(1)).findAndRemove(anyString());
+
+    }
+
+    @Test
+    void testHandleNotFound() {
+        when(repository.findById(anyString())).thenReturn(Mono.empty());
+
+        try {
+            service.findById("123").block();
+        } catch (Exception ex) {
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(format("Object not found. Id: %s, Type: %s", "123", User.class.getSimpleName()),
+                    ex.getMessage());
+        }
     }
 
 }
