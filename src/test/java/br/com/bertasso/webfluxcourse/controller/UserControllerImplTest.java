@@ -5,6 +5,7 @@ import br.com.bertasso.webfluxcourse.mapper.UserMapper;
 import br.com.bertasso.webfluxcourse.model.request.UserRequest;
 import br.com.bertasso.webfluxcourse.model.response.UserResponse;
 import br.com.bertasso.webfluxcourse.service.UserService;
+import br.com.bertasso.webfluxcourse.service.exception.ObjectNotFoundException;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -81,7 +82,7 @@ class UserControllerImplTest {
     }
 
     @Test
-    @DisplayName("Test find by id endpoint with sucess")
+    @DisplayName("Test find by id endpoint with success")
     void testFindByIdWithSucess() {
         final UserResponse userResponse = new UserResponse(ID, NAME, MAIL, PASSWORD);
 
@@ -130,7 +131,7 @@ class UserControllerImplTest {
 
     @Test
     @DisplayName("Test update endpoint with success")
-    void update() {
+    void testUpdateWithSuccess() {
         final UserResponse userResponse = new UserResponse(ID, NAME, MAIL, PASSWORD);
         final UserRequest request = new UserRequest(NAME.concat(" "), MAIL, PASSWORD);
 
@@ -155,6 +156,26 @@ class UserControllerImplTest {
     }
 
     @Test
-    void delete() {
+    @DisplayName("Test delete endpoint with success")
+    void testDeleteWithSuccess() {
+        when(service.delete(anyString()))
+                .thenReturn(just(User.builder().build()));
+
+        webTestClient.delete().uri("/users/" + ID)
+                .exchange()
+                .expectStatus().isOk();
+
+        verify(service).delete(anyString());
+    }
+
+    @Test
+    @DisplayName("Test delete endpoint with not found id")
+    void testDeleteNotFound() {
+        when(service.delete(anyString()))
+                .thenThrow(new ObjectNotFoundException(""));
+
+        webTestClient.delete().uri("/users/" + ID)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }
